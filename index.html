@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#b44d12">
+  <meta name="description" content="用手機瀏覽器直接修復 360 全景圖，支援 2:1 裁切、JPEG 輸出與 GPano metadata。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>360 全景圖手機修復版</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>
+    /* ════════════════════════════════════════════
+       AJ 標準 Footer 變數（/add-footer 注入）
+       命名空間 --aj-footer-* 不會與專案其他變數衝突
+       ════════════════════════════════════════════ */
+
+    /* 淺色模式預設值（本專案固定使用淺色主題，不套用深色模式） */
+    :root {
+      --aj-footer-bg:         #FFFFFF;
+      --aj-footer-text:       #64748B;
+      --aj-footer-link:       #2563EB;
+      --aj-footer-link-hover: #1D4ED8;
+      --aj-footer-border:     #E2E8F0;
+    }
+
+    /* ── 免責聲明區塊 ── */
+    .disclaimer {
+      margin-top: auto;
+      width: 100%;
+      border-top: 1px solid var(--aj-footer-border);
+      background-color: var(--aj-footer-bg);
+    }
+
+    /* 免責聲明底部漸層分隔線（參照 halfmemo.com） */
+    .disclaimer::after {
+      content: "";
+      display: block;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgb(26, 122, 212) 25%,
+        rgb(26, 122, 212) 75%,
+        transparent 100%
+      );
+    }
+
+    .disclaimer-inner {
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .disclaimer p {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--aj-footer-text);
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 1rem 1.5rem;
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--aj-footer-text);
+      text-align: center;
+      background-color: var(--aj-footer-bg);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    footer a {
+      color: var(--aj-footer-link);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--aj-footer-link-hover);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <p class="eyebrow">Mobile Web Prototype</p>
+      <h1>360 全景圖手機修復版</h1>
+      <p class="hero-copy">
+        直接用手機瀏覽器上傳圖片，檢查比例、裁切成 2:1、轉成 JPEG，並補上 GPano metadata。
+      </p>
+      <div class="hero-actions">
+        <label class="upload-button">
+          <input id="file-input" type="file" accept="image/*" multiple>
+          選擇圖片
+        </label>
+        <button id="process-button" class="secondary-button" type="button">開始處理</button>
+      </div>
+      <p class="hero-note">第一版採前端本機處理，不會改動原始檔，只會產生新的下載檔。</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel panel-settings">
+        <div class="panel-head">
+          <h2>常用設定</h2>
+          <button id="reset-button" class="text-button" type="button">還原預設值</button>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>非 2:1 圖片</span>
+            <select id="non-2to1-action">
+              <option value="crop">自動裁切成 2:1</option>
+              <option value="keep">照原圖輸出</option>
+              <option value="skip">跳過這張圖</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>比例容差</span>
+            <input id="ratio-tolerance" type="number" min="0" step="0.001" value="0.01">
+          </label>
+
+          <label class="field">
+            <span>裁切保留位置 X (%)</span>
+            <input id="crop-anchor-x" type="number" min="0" max="100" step="1" value="50">
+          </label>
+
+          <label class="field">
+            <span>裁切保留位置 Y (%)</span>
+            <input id="crop-anchor-y" type="number" min="0" max="100" step="1" value="50">
+          </label>
+
+          <label class="field">
+            <span>檔名後綴</span>
+            <input id="filename-suffix" type="text" value="_360">
+          </label>
+
+          <label class="field">
+            <span>JPEG 品質</span>
+            <input id="jpeg-quality" type="number" min="1" max="100" step="1" value="95">
+          </label>
+
+          <label class="field">
+            <span>透明背景補色</span>
+            <input id="background-color" type="text" value="#FFFFFF" spellcheck="false">
+          </label>
+
+          <label class="field">
+            <span>ProjectionType</span>
+            <input id="projection-type" type="text" value="equirectangular">
+          </label>
+
+          <label class="field checkbox-field">
+            <input id="use-panorama-viewer" type="checkbox" checked>
+            <span>UsePanoramaViewer</span>
+          </label>
+
+          <label class="field">
+            <span>SourcePhotosCount</span>
+            <input id="source-photos-count" type="number" min="1" step="1" value="1">
+          </label>
+        </div>
+      </section>
+
+      <section class="panel panel-files">
+        <div class="panel-head">
+          <h2>待處理檔案</h2>
+          <button id="clear-button" class="text-button" type="button">清空清單</button>
+        </div>
+
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <p>把圖片拖進來，或按上方「選擇圖片」</p>
+          <p class="dropzone-subcopy">支援 JPG、PNG、WEBP、BMP、TIFF</p>
+        </div>
+
+        <div id="queue-summary" class="summary-card">尚未加入任何圖片</div>
+        <div id="file-list" class="file-list" aria-live="polite"></div>
+      </section>
+
+      <section class="panel panel-results">
+        <div class="panel-head">
+          <h2>處理結果</h2>
+          <button id="download-all-button" class="text-button" type="button">下載全部成功檔案</button>
+        </div>
+
+        <div id="status-banner" class="status-banner">尚未開始處理</div>
+        <div id="results-list" class="results-list" aria-live="polite"></div>
+      </section>
+
+      <section class="panel panel-preview">
+        <div class="panel-head">
+          <h2>預覽</h2>
+        </div>
+        <div id="preview-empty" class="preview-empty">處理完成後，點選結果卡片可在這裡預覽。</div>
+        <figure id="preview-card" class="preview-card hidden">
+          <img id="preview-image" alt="處理結果預覽">
+          <figcaption id="preview-caption"></figcaption>
+        </figure>
+      </section>
+    </main>
+  </div>
+
+  <script src="./assets/app.js" defer></script>
+
+  <!-- 免責聲明（排版參照 halfmemo.com） -->
+  <section class="disclaimer">
+    <div class="disclaimer-inner">
+      <p>免責聲明：本站內容為個人學習、實作與經驗分享紀錄，部分內容透過 AI 協助修正與整理。
+        由於每位使用者的系統環境、軟體版本、權限設定與操作方式不同，實際結果可能有所差異。
+        請在操作前自行評估風險並備份重要資料。
+        因參考本站內容所造成之任何系統異常、資料遺失、設定錯誤、設備故障、服務中斷或其他直接、間接損失，
+        均由使用者自行承擔，本站與作者不負任何相關責任。</p>
+    </div>
+  </section>
+
+  <footer>
+    <div>Copyright &copy; 2026</div>
+    <span style="margin: 0 0.4rem; opacity: 0.3">|</span>
+    <a href="https://halfmemo.com/" target="_blank" rel="noopener noreferrer">半桶水的AI筆記</a>
+    <span style="margin: 0 0.4rem; opacity: 0.3">|</span>
+    <a href="https://www.facebook.com/profile.php?id=100057587553627" target="_blank" rel="noopener noreferrer">民興自動控制行</a>
+  </footer>
+</body>
+</html>
