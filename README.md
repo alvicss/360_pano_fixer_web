@@ -1,66 +1,124 @@
 # 360 全景圖手機修復版
 
-這是獨立於 `files` 專案之外的新原型，目標是讓手機瀏覽器直接處理 360 圖片，不需要安裝 App，也不需要後端。
+這是一個純前端的靜態網頁工具，讓手機或桌面瀏覽器直接處理 360 全景圖片，不需要安裝 App，也不需要後端服務。
 
-## 專案特性
+使用者可以在瀏覽器內完成圖片選取、比例檢查、裁切為 2:1、轉出 JPEG，並自動補上常用的 GPano XMP metadata，最後直接下載處理後的新檔案。
 
-- 純靜態網頁：`index.html` + `assets/`
-- 手機瀏覽器可直接操作
-- 支援圖片上傳、2:1 檢查、裁切、轉 JPEG
-- 直接在前端插入 GPano XMP metadata
-- 不會改動原始圖檔，只會下載新的 JPG
+## 功能重點
 
-## 檔案結構
+- 純靜態網站，可直接部署到 GitHub Pages
+- 支援手機瀏覽器操作
+- 支援拖曳或批次選取多張圖片
+- 支援 JPG、JPEG、PNG、WEBP、BMP、TIFF、TIF
+- 可檢查圖片是否接近 2:1 全景比例
+- 非 2:1 圖片可選擇自動裁切、保留原尺寸輸出或直接跳過
+- 可調整裁切保留位置 X / Y
+- 可設定 JPEG 品質、檔名後綴與透明背景補色
+- 會在前端寫入常用的 GPano metadata
+- 提供處理結果列表、單張預覽與成功檔案批次下載
+
+## 技術特性
+
+- 無後端、無資料庫、無建置流程
+- 使用原生 HTML、CSS、JavaScript
+- 所有圖片處理都在本機瀏覽器內完成
+- 不會修改原始檔，只會產生新的下載檔
+
+## 專案結構
 
 ```text
 mobile-web/
-  index.html
-  assets/
-    app.js
-    styles.css
+├─ index.html
+├─ .nojekyll
+├─ README.md
+└─ assets/
+   ├─ app.js
+   └─ styles.css
 ```
 
 ## 使用方式
 
-1. 用瀏覽器打開 `index.html`
-2. 選擇一張或多張圖片
-3. 調整需要的常用設定
+1. 直接用瀏覽器開啟 `index.html`
+2. 點選「選擇圖片」或把圖片拖進頁面
+3. 依需求調整常用設定
 4. 按「開始處理」
-5. 處理完成後逐張下載，或按「下載全部成功檔案」
+5. 在結果區下載單張 JPG，或按「下載全部成功檔案」
 
-## GitHub Pages 上線
+## 可調整設定
 
-這個專案是純靜態網頁，適合直接部署到 GitHub Pages。
+- `非 2:1 圖片`
+  - `自動裁切成 2:1`
+  - `照原圖輸出`
+  - `跳過這張圖`
+- `比例容差`
+- `裁切保留位置 X (%)`
+- `裁切保留位置 Y (%)`
+- `檔名後綴`
+- `JPEG 品質`
+- `透明背景補色`
+- `ProjectionType`
+- `UsePanoramaViewer`
+- `SourcePhotosCount`
 
-### 最簡單做法
+## 會寫入的 GPano 資訊
 
-1. 建立一個 GitHub repository
-2. 把 `mobile-web` 內的檔案上傳到 repository 根目錄
-3. 到 GitHub repository 的 `Settings > Pages`
-4. `Build and deployment` 選 `Deploy from a branch`
-5. Branch 選你的主分支，資料夾選 `/ (root)`
-6. 儲存後等待 GitHub 產生網址
+目前前端會補上常用的 GPano XMP 欄位，適合一般 360 全景圖瀏覽場景使用，包含：
 
-之後手機直接打開類似下面的網址即可：
+- `ProjectionType`
+- `UsePanoramaViewer`
+- `CroppedAreaImageWidthPixels`
+- `CroppedAreaImageHeightPixels`
+- `FullPanoWidthPixels`
+- `FullPanoHeightPixels`
+- `CroppedAreaLeftPixels`
+- `CroppedAreaTopPixels`
+- `SourcePhotosCount`
+
+## GitHub Pages 部署
+
+這個專案是純靜態網站，最適合直接放在 GitHub Pages。
+
+1. 建立 GitHub repository
+2. 將 `mobile-web` 內的檔案放到 repository 根目錄
+3. 到 GitHub 的 `Settings > Pages`
+4. 在 `Build and deployment` 選擇 `Deploy from a branch`
+5. 選擇主要分支與 `/ (root)` 目錄
+6. 儲存後等待 GitHub 產生網站網址
+
+網站網址通常會是：
 
 ```text
 https://你的帳號.github.io/你的-repo/
 ```
 
-### 為什麼有 `.nojekyll`
+`.nojekyll` 用來避免 GitHub Pages 對靜態檔案做額外的 Jekyll 處理。
 
-GitHub Pages 預設可能會經過 Jekyll 處理。這個專案雖然沒有特殊需求，但放一個 `.nojekyll` 可以避免靜態檔案被額外處理。
+## 隱私與安全
 
-## 第一版已包含
-
-- 非 2:1 圖片可選擇裁切、保留、跳過
-- 可設定裁切保留位置 X/Y
-- 可設定 JPEG 品質與透明背景補色
-- 會寫入常用 GPano metadata
+- 本工具不需要上傳圖片到伺服器
+- 所有處理都在使用者自己的瀏覽器內完成
+- 原始檔不會被覆蓋
+- 建議在正式大量使用前，先拿幾張測試圖確認輸出結果符合需求
 
 ## 目前限制
 
-- 多張批次下載是逐張觸發，尚未做 zip 打包
+- 批次下載目前是逐張觸發，尚未做 zip 打包
 - 以現代手機瀏覽器為主，舊版瀏覽器可能有相容性問題
-- 目前只做常用欄位，未搬移桌面版全部進階 metadata 設定
-- 手機若處理很大的 360 圖，仍可能因記憶體不足而變慢或失敗
+- 超大尺寸圖片在手機上仍可能因記憶體限制而變慢或失敗
+- 目前只處理常用 GPano 欄位，未包含桌面工具的完整進階 metadata 設定
+
+## 本機開發
+
+這個專案不依賴 Node.js 或其他建置工具，直接修改檔案後重新整理瀏覽器即可。
+
+如果你想避免某些瀏覽器對本機檔案的限制，也可以用任何簡單靜態伺服器啟動，例如：
+
+```bash
+python -m http.server 8000
+```
+
+再打開：
+
+```text
+http://localhost:8000/
+```

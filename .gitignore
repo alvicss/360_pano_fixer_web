@@ -1,0 +1,27 @@
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor settings
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.key
+*.pem
+*.pfx
+*.crt
+*.cer
