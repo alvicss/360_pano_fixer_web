@@ -42,9 +42,7 @@ const els = {
   filenameSuffix: document.querySelector("#filename-suffix"),
   jpegQuality: document.querySelector("#jpeg-quality"),
   backgroundColor: document.querySelector("#background-color"),
-  projectionType: document.querySelector("#projection-type"),
   usePanoramaViewer: document.querySelector("#use-panorama-viewer"),
-  sourcePhotosCount: document.querySelector("#source-photos-count"),
 };
 
 bindEvents();
@@ -127,9 +125,7 @@ function resetSettingsForm() {
   els.filenameSuffix.value = defaultSettings.filenameSuffix;
   els.jpegQuality.value = String(defaultSettings.jpegQuality);
   els.backgroundColor.value = defaultSettings.backgroundColor;
-  els.projectionType.value = defaultSettings.projectionType;
   els.usePanoramaViewer.checked = defaultSettings.usePanoramaViewer;
-  els.sourcePhotosCount.value = String(defaultSettings.sourcePhotosCount);
 }
 
 function addFiles(fileList) {
@@ -320,7 +316,6 @@ function collectSettings() {
   const cropAnchorX = parseNumber(els.cropAnchorX.value, "裁切保留位置 X (%)", { min: 0, max: 100 });
   const cropAnchorY = parseNumber(els.cropAnchorY.value, "裁切保留位置 Y (%)", { min: 0, max: 100 });
   const jpegQuality = parseInteger(els.jpegQuality.value, "JPEG 品質", { min: 1, max: 100 });
-  const sourcePhotosCount = parseInteger(els.sourcePhotosCount.value, "SourcePhotosCount", { min: 1 });
   const backgroundColor = normalizeHexColor(els.backgroundColor.value);
 
   return {
@@ -331,9 +326,9 @@ function collectSettings() {
     filenameSuffix: els.filenameSuffix.value || defaultSettings.filenameSuffix,
     jpegQuality,
     backgroundColor,
-    projectionType: els.projectionType.value.trim() || defaultSettings.projectionType,
+    projectionType: defaultSettings.projectionType,
     usePanoramaViewer: els.usePanoramaViewer.checked,
-    sourcePhotosCount,
+    sourcePhotosCount: defaultSettings.sourcePhotosCount,
   };
 }
 

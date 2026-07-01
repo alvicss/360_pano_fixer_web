@@ -197,6 +197,17 @@ button {
   color: var(--text);
 }
 
+.field-value {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(26, 43, 69, 0.14);
+  border-radius: var(--radius-sm);
+  background: rgba(22, 34, 53, 0.06);
+  color: var(--text);
+}
+
 .checkbox-field {
   flex-direction: row;
   align-items: center;

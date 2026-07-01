@@ -56,9 +56,12 @@ mobile-web/
 - `檔名後綴`
 - `JPEG 品質`
 - `透明背景補色`
-- `ProjectionType`
 - `UsePanoramaViewer`
-- `SourcePhotosCount`
+
+## 固定輸出設定
+
+- `ProjectionType`: 固定為 `equirectangular`
+- `SourcePhotosCount`: 固定為 `1`
 
 ## 會寫入的 GPano 資訊
 
